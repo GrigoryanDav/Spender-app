@@ -1,0 +1,13 @@
+.header_container {
+    background-color: blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.header_container > h1 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: white;
+}

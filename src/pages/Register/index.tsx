@@ -1,10 +1,13 @@
-import { Form, Input, Button } from "antd"
+import { Form, Input, Button, Typography } from "antd"
 import { Link, useNavigate } from "react-router-dom"
 import { ROUTES } from "../../constants/routes"
 import { useState } from "react"
 import { auth } from "../../services/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { RegisterFormValues } from "../../ts/interfaces/RegisterFormValues"
+import './index.css'
+
+const { Title } = Typography
 
 const Register = () => {
     const [loading, setLoading] = useState(false)
@@ -25,8 +28,12 @@ const Register = () => {
     }
 
     return (
-        <div>
+        <div className="register_container">
             <Form layout="vertical" form={form} onFinish={handleRegister}>
+                <Title level={3}>
+                    Sign Up
+                </Title>
+
                 <Form.Item
                     label='First Name'
                     name='firstName'
@@ -37,7 +44,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input type="text" placeholder="First Name"/>
+                    <Input type="text" placeholder="First Name" />
                 </Form.Item>
 
                 <Form.Item
@@ -50,7 +57,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input type="text" placeholder="Last Name"/>
+                    <Input type="text" placeholder="Last Name" />
                 </Form.Item>
 
                 <Form.Item
@@ -63,7 +70,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input type="email" placeholder="Email"/>
+                    <Input type="email" placeholder="Email" />
                 </Form.Item>
 
                 <Form.Item
@@ -76,11 +83,14 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input.Password placeholder="Password"/>
+                    <Input.Password placeholder="Password" />
                 </Form.Item>
 
-                <Button type="primary" htmlType="submit" loading={loading}>Sign Up</Button>
-                <Link to={ROUTES.LOGIN}><Button>Sign In</Button></Link>
+                <div className="register_buttons_container">
+                    <Button type="primary" htmlType="submit" loading={loading}>Sign Up</Button>
+                    <hr />
+                    <Link to={ROUTES.LOGIN}><Button>Sign In</Button></Link>
+                </div>
             </Form>
         </div>
     )

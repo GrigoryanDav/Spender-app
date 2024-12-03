@@ -2,6 +2,8 @@ import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } 
 import { ROUTES } from './constants/routes';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MainLayout from './components/layouts/Main';
+import './styles/global.css'
 
 function App() {
   return (
@@ -10,7 +12,7 @@ function App() {
         router={
           createBrowserRouter(
             createRoutesFromElements(
-              <Route path={ROUTES.HOME}>
+              <Route path={ROUTES.HOME} element={<MainLayout />}>
                 <Route path={ROUTES.LOGIN} element={<Login />} />
                 <Route path={ROUTES.REGISTER} element={<Register />} />
               </Route>
