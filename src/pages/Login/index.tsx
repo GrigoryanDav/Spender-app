@@ -1,4 +1,6 @@
 import { Form, Input, Button } from 'antd'
+import { Link } from 'react-router-dom'
+import { ROUTES } from '../../constants/routes'
 
 
 const Login = () => {
@@ -32,6 +34,7 @@ const Login = () => {
                 </Form.Item>
 
                 <Button type='primary'>Sign In</Button>
+                <Link to={ROUTES.REGISTER}><Button>Sign Up</Button></Link>
             </Form>
         </div>
     )
