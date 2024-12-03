@@ -1,14 +1,36 @@
-import { Form, Input, Button, Typography } from 'antd'
+import { Form, Input, Button, Typography, notification } from 'antd'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../constants/routes'
+import { useState } from 'react'
+import { auth } from '../../services/firebase'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { LoginFormValues } from '../../ts/interfaces/LoginFormValues'
 import './index.css'
 
 const { Title } = Typography
 
 const Login = () => {
+    const [loading, setLoading] = useState(false)
+    const [form] = Form.useForm()
+
+    const handleLogin = async (values: LoginFormValues) => {
+        setLoading(true)
+        const { email, password } = values
+        try {
+            await signInWithEmailAndPassword(auth, email, password)
+            form.resetFields()
+        } catch (error) {
+            notification.error({
+                message: 'Invalid Login Credentials'
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <div className='login_container'>
-            <Form layout='vertical'>
+            <Form layout='vertical' form={form} onFinish={handleLogin}>
                 <Title level={3}>
                     Sign In
                 </Title>
@@ -40,7 +62,7 @@ const Login = () => {
                 </Form.Item>
 
                 <div className='login_buttons_container'>
-                    <Button type='primary'>Sign In</Button>
+                    <Button type='primary' htmlType='submit' loading={loading}>Sign In</Button>
                     <hr />
                     <Link to={ROUTES.REGISTER}><Button>Sign Up</Button></Link>
                 </div>
