@@ -1,0 +1,55 @@
+.cabinet_container {
+    display: flex;
+    height: calc(100vh - 78px);
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+
+.cabinet_menu_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s linear, color 0.3s, linear;
+}
+
+.cabinet_menu_container :hover {
+    background-color: blue;
+    color: white;
+} 
+
+.cabinet_menu_container > div {
+    color: blue;
+    height: 100px;
+    width: 200px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.92);
+}
+
+.cabinet_menu_container > div > h2 {
+    text-transform: uppercase;
+}
+
+.cabinet_menu_container > div > span {
+    font-size: 30px;
+    margin-bottom: 5px;
+}
+
+.cabinet_form_container {
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.92);
+    width: 300px;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.cabinet_form_container > form > h3 {
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
