@@ -4,6 +4,9 @@ import { ROUTES } from "../../constants/routes"
 import { useState } from "react"
 import { auth } from "../../services/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore"
+import { db } from "../../services/firebase"
+import { FIRESTORE_PATH_NAMES } from "../../constants/firestorePaths"
 import { RegisterFormValues } from "../../ts/interfaces/RegisterFormValues"
 import './index.css'
 
@@ -16,9 +19,14 @@ const Register = () => {
 
     const handleRegister = async (values: RegisterFormValues) => {
         setLoading(true)
-        const { email, password } = values
+        const { firstName, lastName, email, password } = values
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
+            const response = await createUserWithEmailAndPassword(auth, email, password)
+            const { uid } = response.user
+            const createdDoc = doc(db, FIRESTORE_PATH_NAMES.REGISTERED_USERS, uid)
+            await setDoc(createdDoc, {
+                firstName, lastName, email, uid
+            })
             navigate(ROUTES.LOGIN)
         } catch (error) {
             console.log('Error:', error)
