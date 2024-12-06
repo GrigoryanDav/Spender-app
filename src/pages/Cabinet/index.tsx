@@ -1,25 +1,70 @@
-import { Input, Button, Select, Form, notification} from 'antd'
+import { Input, Button, Select, Form, notification } from 'antd'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
+import { db } from '../../services/firebase'
+import { ROUTES } from '../../constants/routes'
 import { menuItems } from '../../constants/menuItems'
 import { MenuItem } from '../../ts/interfaces/menuItems'
 import { ExpenseFormValues } from '../../ts/interfaces/expenseFormValues'
+import { FIRESTORE_PATH_NAMES } from '../../constants/firestorePaths'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../ts/interfaces/rootState'
+import { ExpenseType } from '../../ts/types/expenseType'
 import './index.css'
 
 const { Option } = Select
 
 const Cabinet = () => {
-    const [expenseType, setExpenseType] = useState<string | null>(null)
+    const navigate = useNavigate()
+    const [expenseType, setExpenseType] = useState<ExpenseType | null>(null)
     const [buttonLoading, setButtonLoading] = useState<boolean>(false)
+    const { authUserInfo: { userData } } = useSelector((store: RootState) => store.userProfile)
     const [form] = Form.useForm()
 
-    const handleSelectChange = (value: string) => {
+    const handleSelectChange = (value: ExpenseType) => {
         setExpenseType(value)
     }
 
-    const handleExpense = (values: ExpenseFormValues) => {
+    const handleExpense = async (values: ExpenseFormValues) => {
         setButtonLoading(true)
+        console.log(values)
         try {
+            if (!userData || !userData.uid) {
+                throw new Error('User ID is not available')
+            }
 
+            if (!expenseType) {
+                throw new Error('Expense type is required')
+            }
+
+            const { uid } = userData
+
+            const expenseDataModel = {
+                amount: values.expense,
+                description: values.description,
+                createdAt: new Date().toISOString(),
+                type: expenseType,
+            }
+
+            const expenseTypeKey = `${expenseType.toUpperCase()}_EXPENSE` as keyof typeof FIRESTORE_PATH_NAMES;
+            console.log(expenseTypeKey)
+            const expenseDocRef = doc(db, FIRESTORE_PATH_NAMES[expenseTypeKey], uid)
+            const expenseDocSnapshot = await getDoc(expenseDocRef)
+
+            if (expenseDocSnapshot.exists()) {
+                await updateDoc(expenseDocRef, {
+                    expenses: arrayUnion(expenseDataModel)
+                })
+            } else {
+                await setDoc(expenseDocRef, {
+                    expenses: [expenseDataModel]
+                })
+            }
+            form.resetFields()
+            notification.success({
+                message: 'Your Expense successfully added'
+            })
         } catch (error) {
             console.log('Expense Error:', error)
         } finally {
@@ -33,7 +78,10 @@ const Cabinet = () => {
                 {
                     menuItems.map((item: MenuItem) => {
                         return (
-                            <div key={item.value}>
+                            <div
+                                key={item.value}
+                                onClick={() => navigate(`${ROUTES.CABINET}/expense/${item.value}`)}
+                            >
                                 <span>{<item.icon />}</span>
                                 <h2>{item.label}</h2>
                             </div>
@@ -92,7 +140,7 @@ const Cabinet = () => {
                         </Select>
                     </Form.Item>
 
-                    <Button type='primary' htmlType='submit'>Submit</Button>
+                    <Button type='primary' htmlType='submit' loading={buttonLoading}>Submit</Button>
                 </Form>
             </div>
         </div>
