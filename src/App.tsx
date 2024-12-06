@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import MainLayout from './components/layouts/Main';
 import CabinetLayout from './components/layouts/Cabinet';
 import Cabinet from './pages/Cabinet';
+import ExpenseTypeData from './pages/ExpenseTypeData';
 import './styles/global.css'
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                 <Route path={ROUTES.REGISTER} element={ isAuth ? <Navigate to={ROUTES.CABINET}/> : <Register />} />
                 <Route path={ROUTES.CABINET} element={ isAuth ? <CabinetLayout /> : <Navigate to={ROUTES.LOGIN}/>}>
                   <Route path={ROUTES.CABINET} element={<Cabinet />} />
+                  <Route path={`${ROUTES.CABINET}/expense/:expenseType`} element={<ExpenseTypeData />}/>
                 </Route>
               </Route>
             )

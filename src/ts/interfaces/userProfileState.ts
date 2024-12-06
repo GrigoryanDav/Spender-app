@@ -4,7 +4,7 @@ export interface userProfileState {
     loading: boolean;
     authUserInfo: {
         isAuth: boolean;
-        userData: RegisterFormValues | {};
+        userData: RegisterFormValues | null;
     };
     error: string | null
 }
