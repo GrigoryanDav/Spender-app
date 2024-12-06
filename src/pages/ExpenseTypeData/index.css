@@ -1,0 +1,80 @@
+.expenses-page {
+    min-height: calc(100vh -78px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.expenses-page > h2 {
+    margin-top: 30px;
+    text-transform: uppercase;
+    color: blue;
+}
+
+.data_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.data_container > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    align-items: center;
+    justify-content: center;
+    list-style-type: none;
+    width: 100%;
+}
+
+.data_container > ul > li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 20px;
+    cursor: pointer;
+    border-radius: 15px;
+    width: 100%;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.92);
+    transition: background-color 0.3s linear;
+}
+
+.data_container > ul > li:hover {
+    background-color: blue;
+}
+
+.data_container > ul > li:hover .data_amount,
+.data_container > ul > li:hover .data_description,
+.data_container > ul > li:hover .data_time {
+    color: white;
+}
+
+
+.data_container > ul > li > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+.data_container > h3 {
+    text-transform: uppercase;
+    color: blue;
+}
+
+.data_amount, .data_time, .data_description {
+    color: blue;
+}
+
+.amount_description_container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 5px;
+}
