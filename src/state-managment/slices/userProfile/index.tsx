@@ -11,7 +11,7 @@ const initialState: userProfileState = {
     loading: false,
     authUserInfo: {
         isAuth: false,
-        userData: {}
+        userData: null
     },
     error: null
 }
@@ -61,7 +61,7 @@ const userProfileSlice = createSlice({
                 state.loading = false
                 state.authUserInfo.isAuth = false
                 state.error = action.payload as string | null
-                state.authUserInfo.userData = {}
+                state.authUserInfo.userData = null
             })
     }
 })
