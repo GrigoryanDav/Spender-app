@@ -5,22 +5,28 @@ import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import { ROUTES } from '../../constants/routes'
 import { menuItems } from '../../constants/menuItems'
+import { useQueryParam } from '../../hooks/useQueryParam'
 import { MenuItem } from '../../ts/interfaces/menuItems'
 import { ExpenseFormValues } from '../../ts/interfaces/expenseFormValues'
 import { FIRESTORE_PATH_NAMES } from '../../constants/firestorePaths'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../ts/interfaces/rootState'
 import { ExpenseType } from '../../ts/types/expenseType'
+import { CurrencySymbols } from '../../constants/currencySymbols'
+import { CurrencyCode } from '../../ts/enums/CurrencyCode'
 import './index.css'
 
 const { Option } = Select
 
 const Cabinet = () => {
     const navigate = useNavigate()
+    const { getQueryParam, setQueryParam } = useQueryParam()
     const [expenseType, setExpenseType] = useState<ExpenseType | null>(null)
     const [buttonLoading, setButtonLoading] = useState<boolean>(false)
     const { authUserInfo: { userData } } = useSelector((store: RootState) => store.userProfile)
     const [form] = Form.useForm()
+    const currencyType = (getQueryParam('currency') as CurrencyCode) || CurrencyCode.AMD
+    const currencySymbol =  getQueryParam('symbol') || CurrencySymbols.amd
 
     const handleSelectChange = (value: ExpenseType) => {
         setExpenseType(value)
@@ -42,6 +48,8 @@ const Cabinet = () => {
 
             const expenseDataModel = {
                 amount: values.expense,
+                currencySymbol: currencySymbol,
+                currency: currencyType,
                 description: values.description,
                 createdAt: new Date().toISOString(),
                 type: expenseType,
@@ -72,6 +80,10 @@ const Cabinet = () => {
         }
     }
 
+    const handleMenuClick = (item: MenuItem) => {
+        navigate(`${ROUTES.CABINET}/expense/${item.value}`)
+    }
+
     return (
         <div className="cabinet_container">
             <div className='cabinet_menu_container'>
@@ -80,7 +92,7 @@ const Cabinet = () => {
                         return (
                             <div
                                 key={item.value}
-                                onClick={() => navigate(`${ROUTES.CABINET}/expense/${item.value}`)}
+                                onClick={() => handleMenuClick(item)}
                             >
                                 <span>{<item.icon />}</span>
                                 <h2>{item.label}</h2>
@@ -93,16 +105,16 @@ const Cabinet = () => {
                 <Form layout='vertical' form={form} onFinish={handleExpense}>
                     <h3>Expense</h3>
                     <Form.Item
-                        label='Your Expense'
+                        label='Your Expense Amount'
                         name='expense'
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your Expense'
+                                message: 'Please input your Expense Amount'
                             }
                         ]}
                     >
-                        <Input type='number' placeholder='Your Expense' />
+                        <Input type='number' placeholder='Your Expense Amount' prefix={currencySymbol} />
                     </Form.Item>
 
                     <Form.Item

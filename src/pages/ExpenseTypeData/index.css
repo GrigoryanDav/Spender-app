@@ -78,3 +78,10 @@
     flex-wrap: wrap;
     gap: 5px;
 }
+
+.expenses-page-loading {
+    height: calc(100vh - 78px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
