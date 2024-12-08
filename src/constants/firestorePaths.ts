@@ -4,5 +4,6 @@ export const FIRESTORE_PATH_NAMES = {
     SHOPPING_EXPENSE: 'shopping',
     FOOD_EXPENSE: 'food',
     PAYMENTS_EXPENSE: 'payments',
-    GIFT_EXPENSE: 'gift'
+    GIFT_EXPENSE: 'gift',
+    INCOME_EXPENSE: 'income'
 }

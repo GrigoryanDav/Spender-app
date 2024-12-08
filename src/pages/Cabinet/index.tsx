@@ -1,5 +1,5 @@
 import { Input, Button, Select, Form, notification } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '../../services/firebase'
@@ -14,27 +14,37 @@ import { RootState } from '../../ts/interfaces/rootState'
 import { ExpenseType } from '../../ts/types/expenseType'
 import { CurrencySymbols } from '../../constants/currencySymbols'
 import { CurrencyCode } from '../../ts/enums/CurrencyCode'
+import { useDispatch } from 'react-redux'
+import { fetchAllExpenses, fetchAllIncomes } from '../../state-managment/slices/financialData'
+import { fetchExpenses } from '../../state-managment/slices/expenses'
+import { AppDispatch } from '../../state-managment/store'
 import './index.css'
 
 const { Option } = Select
 
 const Cabinet = () => {
     const navigate = useNavigate()
-    const { getQueryParam, setQueryParam } = useQueryParam()
+    const dispatch = useDispatch<AppDispatch>()
+    const { getQueryParam } = useQueryParam()
     const [expenseType, setExpenseType] = useState<ExpenseType | null>(null)
     const [buttonLoading, setButtonLoading] = useState<boolean>(false)
     const { authUserInfo: { userData } } = useSelector((store: RootState) => store.userProfile)
     const [form] = Form.useForm()
     const currencyType = (getQueryParam('currency') as CurrencyCode) || CurrencyCode.AMD
-    const currencySymbol =  getQueryParam('symbol') || CurrencySymbols.amd
+    const currencySymbol =  getQueryParam('symbol') || CurrencySymbols[currencyType]
+
 
     const handleSelectChange = (value: ExpenseType) => {
         setExpenseType(value)
     }
 
+    useEffect(() => {
+        dispatch(fetchAllExpenses(currencyType))
+        dispatch(fetchAllIncomes(currencyType))
+    }, [dispatch, currencyType])
+
     const handleExpense = async (values: ExpenseFormValues) => {
         setButtonLoading(true)
-        console.log(values)
         try {
             if (!userData || !userData.uid) {
                 throw new Error('User ID is not available')
@@ -55,8 +65,7 @@ const Cabinet = () => {
                 type: expenseType,
             }
 
-            const expenseTypeKey = `${expenseType.toUpperCase()}_EXPENSE` as keyof typeof FIRESTORE_PATH_NAMES;
-            console.log(expenseTypeKey)
+            const expenseTypeKey = `${expenseType.toUpperCase()}_EXPENSE` as ExpenseType;
             const expenseDocRef = doc(db, FIRESTORE_PATH_NAMES[expenseTypeKey], uid)
             const expenseDocSnapshot = await getDoc(expenseDocRef)
 
@@ -69,6 +78,10 @@ const Cabinet = () => {
                     expenses: [expenseDataModel]
                 })
             }
+        
+            dispatch(fetchExpenses({ uid: uid, expenseType: expenseType }))
+            dispatch(fetchAllExpenses(currencyType))
+            dispatch(fetchAllIncomes(currencyType))
             form.resetFields()
             notification.success({
                 message: 'Your Expense successfully added'
@@ -81,7 +94,7 @@ const Cabinet = () => {
     }
 
     const handleMenuClick = (item: MenuItem) => {
-        navigate(`${ROUTES.CABINET}/expense/${item.value}`)
+        navigate(`${ROUTES.CABINET}/${item.value}`)
     }
 
     return (
@@ -149,6 +162,7 @@ const Cabinet = () => {
                             <Option value='shopping'>Shopping</Option>
                             <Option value='payments'>Payments</Option>
                             <Option value='gift'>Gift</Option>
+                            <Option value='income'>Income</Option>
                         </Select>
                     </Form.Item>
 
