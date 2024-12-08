@@ -4,6 +4,7 @@ import { FIRESTORE_PATH_NAMES } from "../../../constants/firestorePaths";
 import { doc, getDoc, } from "firebase/firestore";
 import { Expense } from "../../../ts/interfaces/expense";
 import { ExpensesState } from "../../../ts/interfaces/expensesState";
+import { ExpenseType } from "../../../ts/types/expenseType";
 
 
 const initialState: ExpensesState = {
@@ -14,7 +15,7 @@ const initialState: ExpensesState = {
 
 export const fetchExpenses = createAsyncThunk<Expense[], { uid: string; expenseType: string }, {rejectValue: string}>('data/fetchExpenses', async ({ uid, expenseType }, { rejectWithValue }) => {
     try {
-        const expenseTypeKey = `${expenseType.toUpperCase()}_EXPENSE` as keyof typeof FIRESTORE_PATH_NAMES
+        const expenseTypeKey = `${expenseType.toUpperCase()}_EXPENSE` as ExpenseType
         const expenseDocRef = doc(db, FIRESTORE_PATH_NAMES[expenseTypeKey], uid)
         const expenseDocSnapshot = await getDoc(expenseDocRef)
 
