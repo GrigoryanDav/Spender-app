@@ -35,7 +35,7 @@ function App() {
                   <Route path={ROUTES.REGISTER} element={isAuth ? <Navigate to={ROUTES.CABINET} /> : <Register />} />
                   <Route path={ROUTES.CABINET} element={isAuth ? <CabinetLayout /> : <Navigate to={ROUTES.LOGIN} />}>
                     <Route path={ROUTES.CABINET} element={<Cabinet />} />
-                    <Route path={`${ROUTES.CABINET}/expense/:expenseType`} element={<ExpenseTypeData />} />
+                    <Route path={`${ROUTES.CABINET}/:expenseType`} element={<ExpenseTypeData />} />
                   </Route>
                 </Route>
               )

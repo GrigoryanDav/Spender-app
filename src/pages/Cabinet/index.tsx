@@ -1,6 +1,6 @@
 import { Input, Button, Select, Form, notification } from 'antd'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import { ROUTES } from '../../constants/routes'
@@ -9,12 +9,11 @@ import { useQueryParam } from '../../hooks/useQueryParam'
 import { MenuItem } from '../../ts/interfaces/menuItems'
 import { ExpenseFormValues } from '../../ts/interfaces/expenseFormValues'
 import { FIRESTORE_PATH_NAMES } from '../../constants/firestorePaths'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../../ts/interfaces/rootState'
 import { ExpenseType } from '../../ts/types/expenseType'
 import { CurrencySymbols } from '../../constants/currencySymbols'
-import { CurrencyCode } from '../../ts/enums/CurrencyCode'
-import { useDispatch } from 'react-redux'
+import { CurrencyCode } from '../../ts/enums/CurrencyCode';
 import { fetchAllExpenses, fetchAllIncomes } from '../../state-managment/slices/financialData'
 import { fetchExpenses } from '../../state-managment/slices/expenses'
 import { AppDispatch } from '../../state-managment/store'
@@ -32,6 +31,7 @@ const Cabinet = () => {
     const [form] = Form.useForm()
     const currencyType = (getQueryParam('currency') as CurrencyCode) || CurrencyCode.AMD
     const currencySymbol =  getQueryParam('symbol') || CurrencySymbols[currencyType]
+    const location = useLocation();
 
 
     const handleSelectChange = (value: ExpenseType) => {
@@ -94,7 +94,12 @@ const Cabinet = () => {
     }
 
     const handleMenuClick = (item: MenuItem) => {
-        navigate(`${ROUTES.CABINET}/${item.value}`)
+        const currentQuery = new URLSearchParams(location.search);
+    
+        navigate({
+            pathname: `${ROUTES.CABINET}/${item.value}`,
+            search: currentQuery.toString(),
+        });
     }
 
     return (

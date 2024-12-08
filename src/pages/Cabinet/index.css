@@ -53,3 +53,19 @@
     text-transform: uppercase;
     margin-bottom: 10px;
 }
+
+@media(max-width: 768px) {
+    .cabinet_menu_container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 450px) {
+    .cabinet_menu_container {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .cabinet_form_container {
+        width: 200px;
+    }
+}

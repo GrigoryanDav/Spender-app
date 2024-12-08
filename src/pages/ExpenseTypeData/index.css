@@ -85,3 +85,16 @@
     align-items: center;
     justify-content: center;
 }
+
+@media(max-width: 768px) {
+    .data_container > ul > li > div {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media(max-width: 450px) {
+    .data_container > ul > li > div > div > p, .data_container > ul > li > div > p {
+        font-size: 14px;
+    }
+}

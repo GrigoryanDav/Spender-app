@@ -88,26 +88,27 @@ const Header = () => {
     return (
         <div className="header_container">
             <h1>Spender</h1>
-            <div>
-                <Select
-                    placeholder="Select a currency"
-                    value={currentCurrency}
-                    onChange={handleCurrencyChange}
-                >
+            {isAuth ? <>
+                <div>
+                    <Select
+                        placeholder="Select a currency"
+                        value={currentCurrency}
+                        onChange={handleCurrencyChange}
+                    >
+                        {
+                            Object.values(CurrencyCode).map((code) => (
+                                <Option key={code} value={code}>
+                                    {code.toUpperCase()}
+                                </Option>
+                            ))
+                        }
+                    </Select>
                     {
-                        Object.values(CurrencyCode).map((code) => (
-                            <Option key={code} value={code}>
-                                {code.toUpperCase()}
-                            </Option>
-                        ))
+                        isAuth ? <Button onClick={handleLogout} className='logout_button'>Logout</Button> : <Link to={ROUTES.LOGIN}><Button>Sign In</Button></Link>
                     }
-                </Select>
-                {
-                    isAuth ? <Button onClick={handleLogout}>Logout</Button> : <Link to={ROUTES.LOGIN}><Button>Sign In</Button></Link>
-                }
-            </div>
-            {
-                isAuth ? <h2 style={{ color: 'white' }}>
+                </div>
+
+                <h2 style={{ color: 'white' }}>
                     {isLoading || isCurrencyLoading || !exchangeRates || Object.keys(exchangeRates).length === 0
                         ? <Spin size="large" />
                         : (
@@ -118,8 +119,9 @@ const Header = () => {
                             </>
                         )
                     }
-                </h2> : <></>
+                </h2>  </> : <></>
             }
+
         </div>
     )
 }

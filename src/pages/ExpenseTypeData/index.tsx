@@ -1,38 +1,28 @@
 import { fetchExpenses } from "../../state-managment/slices/expenses"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../ts/interfaces/rootState"
-import { Link, useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { Link, useParams, useLocation } from "react-router-dom"
+import { useEffect } from "react"
 import { AppDispatch } from "../../state-managment/store"
 import { useQueryParam } from "../../hooks/useQueryParam"
 import { Button, Spin } from "antd"
 import { ROUTES } from "../../constants/routes"
 import { CurrencyCode } from "../../ts/enums/CurrencyCode"
 import { CurrencySymbols } from "../../constants/currencySymbols"
+import { convertCurrency } from "../../helpers/convertCurrency"
 import './index.css'
 
 const ExpenseTypeData = () => {
+    const location = useLocation()
     const { expenseType } = useParams<{ expenseType: string }>()
     const dispatch = useDispatch<AppDispatch>()
     const { getQueryParam } = useQueryParam()
     const { expenses, loading } = useSelector((store: RootState) => store.expenses)
     const { authUserInfo: { userData } } = useSelector((store: RootState) => store.userProfile)
+    const { exchangeRates, isLoading } = useSelector((store:RootState) => store.financialData)
     const currencyType = (getQueryParam('currency') as CurrencyCode) || CurrencyCode.AMD
     const symbol = getQueryParam('symbol') || CurrencySymbols.amd
-    const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({})
 
-
-    useEffect(() => {
-        const handleFetch = () => {
-            fetch(`https://open.er-api.com/v6/latest/${currencyType}`)
-                .then((response) => response.json())
-                .then((result) => {
-                    setExchangeRates(result.rates)
-                })
-        }
-
-        handleFetch()
-    }, [currencyType])
 
     useEffect(() => {
         if (userData && userData.uid && expenseType) {
@@ -41,24 +31,17 @@ const ExpenseTypeData = () => {
     }, [dispatch, expenseType, userData])
 
 
-    const convertCurrency = (amount: number, fromCurrency: string, toCurrency: string): number => {
-        if (!exchangeRates[fromCurrency] || !exchangeRates[toCurrency]) return amount
-
-        const rate = exchangeRates[toCurrency] / exchangeRates[fromCurrency]
-        return amount * rate
-    }
-
-    if (loading || !exchangeRates || Object.keys(exchangeRates).length === 0) return (<div className="expenses-page-loading"><Spin size="large" /></div>)
+    if (loading || isLoading || !exchangeRates || Object.keys(exchangeRates).length === 0) return (<div className="expenses-page-loading"><Spin size="large" /></div>)
 
     return (
         <div className="expenses-page">
-            <h2>Your Expenses</h2>
+            <h2>{expenseType === "income" ? "Your Incomes" : "Your Expenses"}</h2>
             {expenses?.length > 0 ? (
                 <div className="data_container">
                     <h3>{expenses[0].type}</h3>
                     <ul>
                         {expenses.map((expense, index) => {
-                            const convertedAmount = convertCurrency(expense.amount, expense.currency.toUpperCase(), currencyType.toUpperCase())
+                            const convertedAmount = convertCurrency(expense.amount, expense.currency.toUpperCase(), currencyType.toUpperCase(), exchangeRates)
                             return (
                                 <li key={index}>
                                     <div>
@@ -76,7 +59,7 @@ const ExpenseTypeData = () => {
             ) : (
                 <p>No expenses found.</p>
             )}
-            <Link to={ROUTES.CABINET}><Button>Cabinet</Button></Link>
+            <Link to={`${ROUTES.CABINET}${location.search}`}><Button>Cabinet</Button></Link>
         </div>
     )
 }
