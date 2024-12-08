@@ -8,7 +8,7 @@ import { useQueryParam } from '../../../hooks/useQueryParam'
 import { Button, Select, Spin } from 'antd'
 import { CurrencyCode } from '../../../ts/enums/CurrencyCode'
 import { CurrencySymbols } from '../../../constants/currencySymbols'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { fetchAllExpenses, fetchAllIncomes, fetchExchangeRates } from '../../../state-managment/slices/financialData'
 import { convertCurrency } from '../../../helpers/convertCurrency'
 import './index.css'
@@ -27,7 +27,7 @@ const Header = () => {
 
     const isInitialRender = useRef(true)
 
-    const fetchData = async (currency: CurrencyCode) => {
+    const fetchData = useCallback(async (currency: CurrencyCode) => {
         setIsCurrencyLoading(true)
 
         try {
@@ -41,7 +41,7 @@ const Header = () => {
         } finally {
             setIsCurrencyLoading(false)
         }
-    }
+    }, [dispatch])
 
     useEffect(() => {
         if (isInitialRender.current) {
@@ -55,7 +55,7 @@ const Header = () => {
 
             fetchData(initialCurrency)
         }
-    }, [dispatch, getQueryParam])
+    }, [dispatch, fetchData, getQueryParam])
 
     useEffect(() => {
         if (!isLoading && exchangeRates && Object.keys(exchangeRates).length > 0) {
@@ -63,7 +63,7 @@ const Header = () => {
             const convertedBudget = convertCurrency(baseBudget, CurrencyCode.AMD, currentCurrency, exchangeRates)
             setBudget(convertedBudget)
         }
-    }, [totalExpenses, totalIncomes, currentCurrency, exchangeRates])
+    }, [totalExpenses, totalIncomes, currentCurrency, exchangeRates, isLoading])
 
     const handleCurrencyChange = async (value: CurrencyCode) => {
         const currencySymbol = CurrencySymbols[value]

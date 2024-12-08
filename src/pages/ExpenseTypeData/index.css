@@ -86,6 +86,10 @@
     justify-content: center;
 }
 
+.expenses-page > a {
+    margin-bottom: 50px;
+}
+
 @media(max-width: 768px) {
     .data_container > ul > li > div {
         flex-direction: column;
