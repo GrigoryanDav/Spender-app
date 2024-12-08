@@ -4,7 +4,17 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    background: url('https://png.pngtree.com/background/20221028/original/pngtree-abstract-receiving-money-using-a-smartphone-picture-image_1931104.jpg');
     background-repeat: no-repeat;
     background-size: cover;
+    gap: 50px;
+}
+
+.home_container > h2 {
+    text-transform: capitalize;
+    color: white;
+}
+
+.home_container > p {
+    max-width: 300px;
+    color: white;
 }
