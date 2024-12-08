@@ -1,5 +1,5 @@
 import { Input, Button, Select, Form, notification } from 'antd'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '../../services/firebase'
@@ -37,11 +37,6 @@ const Cabinet = () => {
     const handleSelectChange = (value: ExpenseType) => {
         setExpenseType(value)
     }
-
-    useEffect(() => {
-        dispatch(fetchAllExpenses(currencyType))
-        dispatch(fetchAllIncomes(currencyType))
-    }, [dispatch, currencyType])
 
     const handleExpense = async (values: ExpenseFormValues) => {
         setButtonLoading(true)

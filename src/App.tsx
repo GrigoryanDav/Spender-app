@@ -13,6 +13,7 @@ import MainLayout from './components/layouts/Main';
 import CabinetLayout from './components/layouts/Cabinet';
 import Cabinet from './pages/Cabinet';
 import ExpenseTypeData from './pages/ExpenseTypeData';
+import Home from './pages/Home';
 import './styles/global.css'
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             createBrowserRouter(
               createRoutesFromElements(
                 <Route path={ROUTES.HOME} element={<MainLayout />}>
+                  <Route path={ROUTES.HOME} element={<Home />}/>
                   <Route path={ROUTES.LOGIN} element={isAuth ? <Navigate to={ROUTES.CABINET} /> : <Login />} />
                   <Route path={ROUTES.REGISTER} element={isAuth ? <Navigate to={ROUTES.CABINET} /> : <Register />} />
                   <Route path={ROUTES.CABINET} element={isAuth ? <CabinetLayout /> : <Navigate to={ROUTES.LOGIN} />}>

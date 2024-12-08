@@ -1,13 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { db } from "../../../services/firebase";
-import { getDocs, collection } from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";  // Используем getDoc для доступа к документу по userId
 import { FIRESTORE_PATH_NAMES } from "../../../constants/firestorePaths";
 import { convertCurrency } from "../../../helpers/convertCurrency";
 import { RootState } from "../../../ts/interfaces/rootState";
 import { FinancialDataState } from "../../../ts/interfaces/financialDataState";
-
-
-
 
 const initialState: FinancialDataState = {
     totalExpenses: 0,
@@ -23,11 +20,12 @@ export const fetchExchangeRates = createAsyncThunk('financialData/fetchExchangeR
     return data.rates
 })
 
-export const fetchAllExpenses = createAsyncThunk('financialData/fetchAllExpenses', async (currentCurrency: string, {rejectWithValue, getState, dispatch}) => {
+export const fetchAllExpenses = createAsyncThunk('financialData/fetchAllExpenses', async (currentCurrency: string, { rejectWithValue, getState, dispatch }) => {
     const state: RootState = getState() as RootState
+    const userId = state.userProfile.authUserInfo.userData?.uid
     const exchangeRates = state.financialData.exchangeRates;
 
-    if(Object.keys(exchangeRates).length === 0) {
+    if (Object.keys(exchangeRates).length === 0) {
         await dispatch(fetchExchangeRates(currentCurrency))
     }
 
@@ -38,63 +36,69 @@ export const fetchAllExpenses = createAsyncThunk('financialData/fetchAllExpenses
         FIRESTORE_PATH_NAMES.FOOD_EXPENSE,
         FIRESTORE_PATH_NAMES.PAYMENTS_EXPENSE,
         FIRESTORE_PATH_NAMES.GIFT_EXPENSE,
-      ];
+    ];
 
-      for (const collectionName of collections) {
+    for (const collectionName of collections) {
         try {
-            const collectionSnapshot = await getDocs(collection(db, collectionName))
-            if(collectionSnapshot.empty) {
-                continue
+            if (!userId) {
+                return rejectWithValue("User ID is not defined");
             }
+            
+            const docRef = doc(db, collectionName, userId);
+            const docSnapshot = await getDoc(docRef);
 
-            collectionSnapshot.forEach((doc) => {
-                const expenses = doc.data().expenses
-                if(expenses && Array.isArray(expenses)) {
+            if (docSnapshot.exists()) {
+                const expenses = docSnapshot.data()?.expenses;
+                if (expenses && Array.isArray(expenses)) {
                     totalAmount += expenses.reduce((sum, expense) => {
                         const amount = +(expense.amount || 0)
                         const convertedAmount = convertCurrency(amount, expense.currency.toUpperCase(), currentCurrency.toUpperCase(), exchangeRates)
                         return sum += parseFloat(convertedAmount.toFixed(2))
                     }, 0)
                 }
-            })
+            }
         } catch (error) {
             return rejectWithValue(error)
         }
-      }
-      return totalAmount
+    }
+    return totalAmount
 })
 
-
-export const fetchAllIncomes = createAsyncThunk('financialData/fetchAllIncomes', async (currentCurrency: string, {rejectWithValue, getState, dispatch}) => {
+export const fetchAllIncomes = createAsyncThunk('financialData/fetchAllIncomes', async (currentCurrency: string, { rejectWithValue, getState, dispatch }) => {
     const state: RootState = getState() as RootState
-    const exchangeRates = state.financialData.exchangeRates
+    const userId = state.userProfile.authUserInfo.userData?.uid
+    const exchangeRates = state.financialData.exchangeRates;
 
-    if(Object.keys(exchangeRates).length === 0) {
+    if (Object.keys(exchangeRates).length === 0) {
         await dispatch(fetchExchangeRates(currentCurrency))
     }
 
     let totalIncomeAmount: number = 0
     
     try {
-        const incomeCollectionSnapshot = await getDocs(collection(db, FIRESTORE_PATH_NAMES.INCOME_EXPENSE))
+        if (!userId) {
+            return rejectWithValue("User ID is not defined");
+        }
 
-        incomeCollectionSnapshot.forEach((doc) => {
-            const incomes = doc.data().expenses
-            if(incomes && Array.isArray(incomes)) {
+        const docRef = doc(db, FIRESTORE_PATH_NAMES.INCOME_EXPENSE, userId);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
+            const incomes = docSnapshot.data()?.expenses;
+            if (incomes && Array.isArray(incomes)) {
                 totalIncomeAmount += incomes.reduce((sum, income) => {
                     const amount = +(income.amount || 0)
                     const convertedAmount = convertCurrency(amount, income.currency.toUpperCase(), currentCurrency.toUpperCase(), exchangeRates)
                     return sum += parseFloat(convertedAmount.toFixed(2))
                 }, 0)
             }
-        })
+        }
     } catch (error) {
         return rejectWithValue(error)
     }
 
     return totalIncomeAmount
 })
-
 
 const financialDataSlice = createSlice({
     name: 'financialData',

@@ -22,13 +22,28 @@ const Header = () => {
     const { totalExpenses, totalIncomes, exchangeRates, isLoading } = useSelector((store: RootState) => store.financialData)
     const dispatch = useDispatch<AppDispatch>()
     const { getQueryParam, setQueryParam } = useQueryParam()
-
     const [budget, setBudget] = useState<number>(0)
     const [currentCurrency, setCurrentCurrency] = useState<CurrencyCode>(CurrencyCode.AMD)
     const [symbol, setSymbol] = useState<string>(CurrencySymbols[CurrencyCode.AMD])
     const [isCurrencyLoading, setIsCurrencyLoading] = useState<boolean>(false)
 
     const isInitialRender = useRef(true)
+
+    const fetchData = async (currency: CurrencyCode) => {
+        setIsCurrencyLoading(true)
+
+        try {
+            await Promise.all([
+                dispatch(fetchExchangeRates(currency)),
+                dispatch(fetchAllExpenses(currency)),
+                dispatch(fetchAllIncomes(currency))
+            ])
+        } catch (error) {
+            console.error('Error while fetching data:', error)
+        } finally {
+            setIsCurrencyLoading(false)
+        }
+    }
 
     useEffect(() => {
         if (isInitialRender.current) {
@@ -40,9 +55,7 @@ const Header = () => {
             setCurrentCurrency(initialCurrency)
             setSymbol(initialSymbol)
 
-            dispatch(fetchExchangeRates(initialCurrency))
-            dispatch(fetchAllExpenses(initialCurrency))
-            dispatch(fetchAllIncomes(initialCurrency))
+            fetchData(initialCurrency)
         }
     }, [dispatch, getQueryParam])
 
@@ -103,16 +116,14 @@ const Header = () => {
                             ))
                         }
                     </Select>
-                    {
-                        isAuth ? <Button onClick={handleLogout} className='logout_button'>Logout</Button> : <Link to={ROUTES.LOGIN}><Button>Sign In</Button></Link>
-                    }
+                    <Button onClick={handleLogout} className='logout_button'>Logout</Button>
                 </div>
 
                 <h2 style={{ color: 'white' }}>
                     {isLoading || isCurrencyLoading || !exchangeRates || Object.keys(exchangeRates).length === 0
                         ? <Spin size="large" />
                         : (
-                            <> {/* Это обертка, чтобы вернуть несколько элементов */}
+                            <>
                                 Budget: <span style={{ color: budget >= 0 ? '#66FF00' : 'red' }}>
                                     {budget.toFixed(2)} {symbol}
                                 </span>
