@@ -12,7 +12,7 @@
     color: white;
 }
 
-.header_container > div {
+.header_container > div, .header_container > div > div{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -26,7 +26,7 @@
         align-items: center;
     }
 
-    .header_container > div {
+    .header_container > div  > div{
         flex-direction: column;
     }
     

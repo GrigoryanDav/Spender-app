@@ -1,19 +1,16 @@
 import { Input, Button, Select, Form, notification } from 'antd'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import { ROUTES } from '../../constants/routes'
 import { menuItems } from '../../constants/menuItems'
-import { useQueryParam } from '../../hooks/useQueryParam'
 import { MenuItem } from '../../ts/interfaces/menuItems'
 import { ExpenseFormValues } from '../../ts/interfaces/expenseFormValues'
 import { FIRESTORE_PATH_NAMES } from '../../constants/firestorePaths'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '../../ts/interfaces/rootState'
 import { ExpenseType } from '../../ts/types/expenseType'
-import { CurrencySymbols } from '../../constants/currencySymbols'
-import { CurrencyCode } from '../../ts/enums/CurrencyCode';
 import { fetchAllExpenses, fetchAllIncomes } from '../../state-managment/slices/financialData'
 import { fetchExpenses } from '../../state-managment/slices/expenses'
 import { AppDispatch } from '../../state-managment/store'
@@ -24,15 +21,23 @@ const { Option } = Select
 const Cabinet = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
-    const { getQueryParam } = useQueryParam()
+    const location = useLocation()
     const [expenseType, setExpenseType] = useState<ExpenseType | null>(null)
     const [buttonLoading, setButtonLoading] = useState<boolean>(false)
     const { authUserInfo: { userData } } = useSelector((store: RootState) => store.userProfile)
     const [form] = Form.useForm()
-    const currencyType = (getQueryParam('currency') as CurrencyCode) || CurrencyCode.AMD
-    const currencySymbol =  getQueryParam('symbol') || CurrencySymbols[currencyType]
-    const location = useLocation();
+    const { currentCurrency, symbol } = useSelector((store: RootState) => store.currency)
 
+
+    useEffect(() => {
+        const savedPath = sessionStorage.getItem('currentPath')
+
+        if (savedPath) {
+            navigate(savedPath)
+        } else {
+            sessionStorage.setItem('currentPath', location.pathname)
+        }
+    }, [location, navigate])  
 
     const handleSelectChange = (value: ExpenseType) => {
         setExpenseType(value)
@@ -53,8 +58,8 @@ const Cabinet = () => {
 
             const expenseDataModel = {
                 amount: values.expense,
-                currencySymbol: currencySymbol,
-                currency: currencyType,
+                currencySymbol: symbol,
+                currency: currentCurrency,
                 description: values.description,
                 createdAt: new Date().toISOString(),
                 type: expenseType,
@@ -73,10 +78,10 @@ const Cabinet = () => {
                     expenses: [expenseDataModel]
                 })
             }
-        
+
             dispatch(fetchExpenses({ uid: uid, expenseType: expenseType }))
-            dispatch(fetchAllExpenses(currencyType))
-            dispatch(fetchAllIncomes(currencyType))
+            dispatch(fetchAllExpenses(currentCurrency))
+            dispatch(fetchAllIncomes(currentCurrency))
             form.resetFields()
             notification.success({
                 message: 'Your Expense successfully added'
@@ -89,12 +94,9 @@ const Cabinet = () => {
     }
 
     const handleMenuClick = (item: MenuItem) => {
-        const currentQuery = new URLSearchParams(location.search);
-    
-        navigate({
-            pathname: `${ROUTES.CABINET}/${item.value}`,
-            search: currentQuery.toString(),
-        });
+        const newPath = `${ROUTES.CABINET}/${item.value}`
+        sessionStorage.setItem('currentPath', newPath)
+        navigate(newPath)
     }
 
     return (
@@ -127,7 +129,7 @@ const Cabinet = () => {
                             }
                         ]}
                     >
-                        <Input type='number' placeholder='Your Expense Amount' prefix={currencySymbol} />
+                        <Input type='number' placeholder='Your Expense Amount' prefix={symbol} />
                     </Form.Item>
 
                     <Form.Item
