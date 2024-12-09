@@ -54,6 +54,10 @@
     margin-bottom: 10px;
 }
 
+.cabinet_description_input, .cabinet_expenseAmount_input {
+    font-size: 16px;
+}
+
 @media(max-width: 768px) {
     .cabinet_menu_container {
         grid-template-columns: repeat(2, 1fr);

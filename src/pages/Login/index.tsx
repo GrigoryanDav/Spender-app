@@ -50,7 +50,7 @@ const Login = () => {
                         }
                     ]}
                 >
-                    <Input type='email' placeholder='Email' />
+                    <Input type='email' placeholder='Email' className='login_email_input'/>
                 </Form.Item>
 
                 <Form.Item
@@ -63,7 +63,7 @@ const Login = () => {
                         }
                     ]}
                 >
-                    <Input.Password placeholder='Password' />
+                    <Input.Password placeholder='Password' className='login_password_input'/>
                 </Form.Item>
 
                 <div className='login_buttons_container'>

@@ -129,7 +129,7 @@ const Cabinet = () => {
                             }
                         ]}
                     >
-                        <Input type='number' placeholder='Your Expense Amount' prefix={symbol} />
+                        <Input type='number' placeholder='Your Expense Amount' prefix={symbol}  className='cabinet_expenseAmount_input'/>
                     </Form.Item>
 
                     <Form.Item
@@ -142,7 +142,7 @@ const Cabinet = () => {
                             }
                         ]}
                     >
-                        <Input type='text' placeholder='Description' />
+                        <Input type='text' placeholder='Description' className='cabinet_description_input'/>
                     </Form.Item>
 
                     <Form.Item

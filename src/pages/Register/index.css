@@ -20,6 +20,10 @@
     gap: 5px;
 }
 
+.register_firstName_input, .register_lastName_input, .register_email_input, .register_password_input {
+    font-size: 16px;
+}
+
 .register_buttons_container > hr {
     width: 80%;
 }

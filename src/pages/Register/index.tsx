@@ -69,7 +69,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input type="text" placeholder="First Name" />
+                    <Input type="text" placeholder="First Name" className="register_firstName_input" />
                 </Form.Item>
 
                 <Form.Item
@@ -82,7 +82,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input type="text" placeholder="Last Name" />
+                    <Input type="text" placeholder="Last Name" className="register_lastName_input" />
                 </Form.Item>
 
                 <Form.Item
@@ -95,7 +95,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input type="email" placeholder="Email" />
+                    <Input type="email" placeholder="Email" className="register_email_input" />
                 </Form.Item>
 
                 <Form.Item
@@ -112,7 +112,7 @@ const Register = () => {
                         }
                     ]}
                 >
-                    <Input.Password placeholder="Password" onChange={handlePasswordChange}/>
+                    <Input.Password placeholder="Password" onChange={handlePasswordChange} className="register_password_input"/>
                 </Form.Item>
 
                 {
