@@ -57,7 +57,7 @@ const ExpenseTypeData = () => {
                     </ul>
                 </div>
             ) : (
-                <p>No expenses found.</p>
+                <p> {expenseType === 'income' ? 'No Incomes Found' : 'No Expenses Found'}</p>
             )}
             <Button onClick={handleCabinetButton}>Cabinet</Button>
         </div>

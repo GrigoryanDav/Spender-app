@@ -15,7 +15,7 @@ const initialState: FinancialDataState = {
 }
 
 export const fetchExchangeRates = createAsyncThunk('financialData/fetchExchangeRates', async (currentCurrency: string) => {
-    const response = await fetch(`https://open.er-api.com/v6/latest/${currentCurrency.toUpperCase()}`)
+    const response = await fetch(`${process.env.REACT_APP_CURRENCY_API_URL}/${currentCurrency.toUpperCase()}`)
     const data = await response.json()
     return data.rates
 })

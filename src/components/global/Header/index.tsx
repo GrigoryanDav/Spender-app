@@ -62,9 +62,6 @@ const Header = () => {
         }
     }, [totalExpenses, totalIncomes, currentCurrency, exchangeRates, isLoading])
 
-    useEffect(() => {
-        fetchData(currentCurrency)
-    }, [currentCurrency, dispatch, fetchData])
 
     const handleCurrencyChange = async (value: CurrencyCode) => {
         const currencySymbol = CurrencySymbols[value]
