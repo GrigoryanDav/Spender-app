@@ -28,16 +28,34 @@ const Cabinet = () => {
     const [form] = Form.useForm()
     const { currentCurrency, symbol } = useSelector((store: RootState) => store.currency)
 
+    useEffect(() => {
+        const savedPath = sessionStorage.getItem('currentPath');
+        if (savedPath && savedPath !== location.pathname) {
+            navigate(savedPath);
+        }
+    }, [location.pathname, navigate]);
 
     useEffect(() => {
-        const savedPath = sessionStorage.getItem('currentPath')
-
-        if (savedPath) {
-            navigate(savedPath)
-        } else {
-            sessionStorage.setItem('currentPath', location.pathname)
+        if (location.state?.fromMenu) {
+            sessionStorage.setItem('currentPath', location.pathname);
         }
-    }, [location, navigate])  
+    }, [location]);
+
+    useEffect(() => {
+        const handlePopState = () => {
+            const savedPath = sessionStorage.getItem('currentPath');
+            if (savedPath && savedPath !== window.location.pathname) {
+                sessionStorage.setItem('currentPath', window.location.pathname);
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+
 
     const handleSelectChange = (value: ExpenseType) => {
         setExpenseType(value)
@@ -96,7 +114,7 @@ const Cabinet = () => {
     const handleMenuClick = (item: MenuItem) => {
         const newPath = `${ROUTES.CABINET}/${item.value}`
         sessionStorage.setItem('currentPath', newPath)
-        navigate(newPath)
+        navigate(newPath, {state: {fromMenu: true}})
     }
 
     return (
@@ -159,12 +177,16 @@ const Cabinet = () => {
                             placeholder='Choose Expense type'
                             onChange={handleSelectChange}
                         >
-                            <Option value='car'>Car</Option>
-                            <Option value='food'>Food</Option>
-                            <Option value='shopping'>Shopping</Option>
-                            <Option value='payments'>Payments</Option>
-                            <Option value='gift'>Gift</Option>
-                            <Option value='income'>Income</Option>
+                            {
+                                menuItems.map((item: MenuItem) => {
+                                    return (
+                                        <Option key={item.value} value={item.value}>
+                                            <span>{<item.icon />}</span>
+                                            {item.label}
+                                        </Option>
+                                    )
+                                })
+                            }
                         </Select>
                     </Form.Item>
 
