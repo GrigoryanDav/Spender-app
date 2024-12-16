@@ -1,8 +1,8 @@
 import { Input, Button, Select, Form } from 'antd'
 import { ExpenseFormProps } from '../../../ts/interfaces/expenseFormProps'; 
 import { MenuItem } from '../../../ts/interfaces/menuItems'
-import { Option } from 'antd/es/mentions'
 
+const { Option } = Select
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({ onFinish, onSelectChange, form, buttonLoading, menuItems, symbol }) => {
     return (

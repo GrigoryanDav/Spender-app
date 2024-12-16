@@ -31,11 +31,11 @@ export const fetchAllExpenses = createAsyncThunk('financialData/fetchAllExpenses
 
     let totalAmount: number = 0
     const collections: string[] = [
-        FIRESTORE_PATH_NAMES.CAR_EXPENSE,
-        FIRESTORE_PATH_NAMES.SHOPPING_EXPENSE,
-        FIRESTORE_PATH_NAMES.FOOD_EXPENSE,
-        FIRESTORE_PATH_NAMES.PAYMENTS_EXPENSE,
-        FIRESTORE_PATH_NAMES.GIFT_EXPENSE,
+        FIRESTORE_PATH_NAMES.CAR,
+        FIRESTORE_PATH_NAMES.SHOPPING,
+        FIRESTORE_PATH_NAMES.FOOD,
+        FIRESTORE_PATH_NAMES.PAYMENTS,
+        FIRESTORE_PATH_NAMES.GIFT,
     ];
 
     for (const collectionName of collections) {
@@ -80,7 +80,7 @@ export const fetchAllIncomes = createAsyncThunk('financialData/fetchAllIncomes',
             return rejectWithValue("User ID is not defined");
         }
 
-        const docRef = doc(db, FIRESTORE_PATH_NAMES.INCOME_EXPENSE, userId);
+        const docRef = doc(db, FIRESTORE_PATH_NAMES.INCOME, userId);
         const docSnapshot = await getDoc(docRef);
 
         if (docSnapshot.exists()) {

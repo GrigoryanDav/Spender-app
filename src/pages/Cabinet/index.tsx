@@ -1,6 +1,6 @@
 import { Form, notification } from 'antd'
-import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate} from 'react-router-dom'
 import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import { ROUTES } from '../../constants/routes'
@@ -21,40 +21,11 @@ import './index.css'
 const Cabinet = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch<AppDispatch>()
-    const location = useLocation()
     const [expenseType, setExpenseType] = useState<ExpenseType | null>(null)
     const [buttonLoading, setButtonLoading] = useState<boolean>(false)
     const { authUserInfo: { userData } } = useSelector((store: RootState) => store.userProfile)
     const [form] = Form.useForm()
     const { currentCurrency, symbol } = useSelector((store: RootState) => store.currency)
-
-    useEffect(() => {
-        const savedPath = sessionStorage.getItem('currentPath');
-        if (savedPath && savedPath !== location.pathname) {
-            navigate(savedPath);
-        }
-    }, [location.pathname, navigate]);
-
-    useEffect(() => {
-        if (location.state?.fromMenu) {
-            sessionStorage.setItem('currentPath', location.pathname);
-        }
-    }, [location]);
-
-    useEffect(() => {
-        const handlePopState = () => {
-            const savedPath = sessionStorage.getItem('currentPath');
-            if (savedPath && savedPath !== window.location.pathname) {
-                sessionStorage.setItem('currentPath', window.location.pathname);
-            }
-        };
-
-        window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, []);
 
 
     const handleSelectChange = (value: ExpenseType) => {
@@ -83,7 +54,7 @@ const Cabinet = () => {
                 type: expenseType,
             }
 
-            const expenseTypeKey = `${expenseType.toUpperCase()}_EXPENSE` as ExpenseType;
+            const expenseTypeKey = expenseType.toUpperCase() as ExpenseType;
             const expenseDocRef = doc(db, FIRESTORE_PATH_NAMES[expenseTypeKey], uid)
             const expenseDocSnapshot = await getDoc(expenseDocRef)
 
@@ -112,9 +83,7 @@ const Cabinet = () => {
     }
 
     const handleMenuClick = (item: MenuItem) => {
-        const newPath = `${ROUTES.CABINET}/${item.value}`
-        sessionStorage.setItem('currentPath', newPath)
-        navigate(newPath, {state: {fromMenu: true}})
+        navigate(`${ROUTES.CABINET}/${item.value}`)
     }
 
     return (
@@ -135,7 +104,7 @@ const Cabinet = () => {
                 }
             </div>
             <div className='cabinet_form_container'>
-                <ExpenseForm 
+                <ExpenseForm
                     onFinish={handleExpense}
                     onSelectChange={handleSelectChange}
                     form={form}

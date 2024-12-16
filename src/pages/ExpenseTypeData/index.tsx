@@ -24,7 +24,6 @@ const ExpenseTypeData = () => {
 
 
     const handleCabinetButton = () => {
-        sessionStorage.removeItem('currentPath')
         navigate(ROUTES.CABINET)
     }
 

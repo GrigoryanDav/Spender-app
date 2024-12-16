@@ -26,6 +26,8 @@ const Header = () => {
     const [budget, setBudget] = useState<number>(0)
     const [isCurrencyLoading, setIsCurrencyLoading] = useState<boolean>(false)
 
+
+    // Function to fetch exchange rates, expenses, and incomes for a specific currency
     const fetchData = useCallback(async (currency: CurrencyCode) => {
         setIsCurrencyLoading(true)
 
@@ -42,6 +44,8 @@ const Header = () => {
         }
     }, [dispatch])
 
+
+    // Initial fetch based on saved or default currency
     useEffect(() => {
         const savedCurrency = sessionStorage.getItem('currentCurrency')
     
@@ -54,6 +58,8 @@ const Header = () => {
         }
     }, [dispatch, currentCurrency, fetchData])
 
+
+    // Calculate the budget when related state changes
     useEffect(() => {
         if (!isLoading && exchangeRates && Object.keys(exchangeRates).length > 0) {
             const baseBudget = totalIncomes - totalExpenses
