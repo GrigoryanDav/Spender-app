@@ -1,4 +1,4 @@
-import { Input, Button, Select, Form, notification } from 'antd'
+import { Form, notification } from 'antd'
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { doc, setDoc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore'
@@ -14,9 +14,9 @@ import { ExpenseType } from '../../ts/types/expenseType'
 import { fetchAllExpenses, fetchAllIncomes } from '../../state-managment/slices/financialData'
 import { fetchExpenses } from '../../state-managment/slices/expenses'
 import { AppDispatch } from '../../state-managment/store'
+import ExpenseForm from '../../components/shared/ExpenseForm'
 import './index.css'
 
-const { Option } = Select
 
 const Cabinet = () => {
     const navigate = useNavigate()
@@ -135,63 +135,14 @@ const Cabinet = () => {
                 }
             </div>
             <div className='cabinet_form_container'>
-                <Form layout='vertical' form={form} onFinish={handleExpense}>
-                    <h3>Expense</h3>
-                    <Form.Item
-                        label='Your Expense Amount'
-                        name='expense'
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your Expense Amount'
-                            }
-                        ]}
-                    >
-                        <Input type='number' placeholder='Your Expense Amount' prefix={symbol}  className='cabinet_expenseAmount_input'/>
-                    </Form.Item>
-
-                    <Form.Item
-                        label='Description'
-                        name='description'
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input Description'
-                            }
-                        ]}
-                    >
-                        <Input type='text' placeholder='Description' className='cabinet_description_input'/>
-                    </Form.Item>
-
-                    <Form.Item
-                        label='Expense Type'
-                        name='expenseType'
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please choose Expense Type'
-                            }
-                        ]}
-                    >
-                        <Select
-                            placeholder='Choose Expense type'
-                            onChange={handleSelectChange}
-                        >
-                            {
-                                menuItems.map((item: MenuItem) => {
-                                    return (
-                                        <Option key={item.value} value={item.value}>
-                                            <span>{<item.icon />}</span>
-                                            {item.label}
-                                        </Option>
-                                    )
-                                })
-                            }
-                        </Select>
-                    </Form.Item>
-
-                    <Button type='primary' htmlType='submit' loading={buttonLoading}>Submit</Button>
-                </Form>
+                <ExpenseForm 
+                    onFinish={handleExpense}
+                    onSelectChange={handleSelectChange}
+                    form={form}
+                    buttonLoading={buttonLoading}
+                    menuItems={menuItems}
+                    symbol={symbol}
+                />
             </div>
         </div>
     )
